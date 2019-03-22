@@ -1,11 +1,16 @@
 import React , {Component} from 'react'
-import {StyleSheet, Text, View, ImageBackground, FlatList} from 'react-native'
+import {StyleSheet, Text, View, ImageBackground, FlatList,
+    TouchableOpacity,
+    Platform,
+
+
+} from 'react-native'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import todayImage from '../../assets/imgs/today.jpg'
 import commonStyle from '../commonStyles'
 import Task from '../components/Task'
-
+import Icon from 'react-native-vector-icons/FontAwesome'
 export default class Agenda extends Component{
     state = {
         tasks:[
@@ -41,7 +46,22 @@ export default class Agenda extends Component{
                 estimateAt:new Date(), doneAt:new Date()},
             {id:Math.random(),desc : "Concluir o curso",
                 estimateAt:new Date(), doneAt:null},
-        ]
+        ],
+        visibleTasks:[],
+        showDoneTasks:true,
+    }
+    filterTasks = () => {
+        let visibleTasks = null
+        if (this.state.showDoneTasks){
+            visibleTasks = [...this.state.tasks]
+        }else{
+            const pending = task => task.doneAt === null
+            visibleTasks = this.state.tasks.filter(pending)
+        }
+        this.setState({visibleTasks})
+    }
+    toogleFilter = () => {
+        this.setState({showDoneTasks:!this.state.showDoneTasks},this.filterTasks)
     }
     toggleTask = id => {
         const tasks = this.state.tasks.map(task=>{
